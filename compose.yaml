@@ -1,0 +1,39 @@
+services:
+  mmd:
+    build:
+      context: .
+      dockerfile: ./docker/python/Dockerfile
+      args:
+        - BASE_PYTHON_VERSION=3.10
+        - UID=${UID}
+        - USERNAME=dockeruser
+
+    volumes:
+      - type: bind
+        source: .
+        target: ${WORKING_DIR}
+      # - type: bind
+      #   source: ${HOME}/.Xauthority
+      #   target: /home/dockeruser/.Xauthority
+      # - type: bind
+      #   source: /tmp/.X11-unix
+      #   target: /tmp/.X11-unix
+
+    shm_size: '8gb'
+    init: true
+    working_dir: ${WORKING_DIR}
+    environment:
+      - CUDA_HOME=${CUDA_HOME}
+      - XDG_CACHE_HOME=${XDG_CACHE_HOME}
+      # - DISPLAY=${DISPLAY}
+    entrypoint: []
+    user: ${UID:-1000}
+    network_mode: host
+
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              capabilities: [gpu]
+              device_ids: ['0']
