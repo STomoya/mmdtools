@@ -54,11 +54,16 @@ class FileReadStream(FileStream):
         """read unsigned short"""
         return struct.unpack('<H', self._fp.read(2))[0]
 
-    def read_str(self):
-        """read string"""
-        length = self.read_int()
-        buffer = struct.unpack(f'<{length}s', self._fp.read(length))[0]
-        return str(buffer, self.header.encoding, errors='replace')
+    def read_long(self):
+        """read long"""
+        return struct.unpack('<l', self._fp.read(4))[0]
+
+    def read_ulong(self):
+        """read long"""
+        return struct.unpack('<L', self._fp.read(4))[0]
+
+    def read_chars(self, length: int=1):
+        return struct.unpack(f'<{length}s', self._fp.read(length))[0]
 
     def read_float(self):
         """read signed float"""
@@ -90,6 +95,10 @@ class FileReadStream(FileStream):
 
     def read_rest(self):
         return self._fp.read()
+
+
+def crop_byte_string(string: bytes, pattern: bytes):
+    return string.split(pattern)[0]
 
 
 def parse_flags(flag, max_flags):
