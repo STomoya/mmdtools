@@ -56,6 +56,11 @@ class PMXFileReadStream(FileReadStream):
     def read_material_index(self) -> int:
         return self._read_index(self.header.material_index_size)
 
+    def read_str(self):
+        """read string"""
+        length = self.read_int()
+        buffer = struct.unpack(f'<{length}s', self._fp.read(length))[0]
+        return str(buffer, self.header.encoding, errors='replace')
 
 
 """loading functions"""
