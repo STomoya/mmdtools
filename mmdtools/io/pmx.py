@@ -66,7 +66,19 @@ class PMXFileReadStream(FileReadStream):
 """loading functions"""
 
 
-def _loop_load(fs: PMXFileReadStream, load_fn: Callable, output: list=None, step: int=1, **kwargs: dict[str, Any]):
+def _loop_load(fs: PMXFileReadStream, load_fn: Callable, output: list=None, step: int=1, **kwargs: dict[str, Any]) -> list:
+    """load data iteratively using the given `load_fn`. If `output` is given, all return values will be appended to this list.
+    If not new list will be made.
+
+    Args:
+        fs (PMXFileReadStream):
+        load_fn (Callable): function to load data from fs.
+        output (list, optional): list to append outputs to. Default: None.
+        step (int, optional): step for loop count. Defaults to 1.
+
+    Returns:
+        list: list of output elements.
+    """
     if output is None:
         output = []
 
@@ -78,7 +90,8 @@ def _loop_load(fs: PMXFileReadStream, load_fn: Callable, output: list=None, step
     return output
 
 
-def _load_header(fs: PMXFileReadStream):
+def _load_header(fs: PMXFileReadStream) -> pmx.Header:
+    """load header"""
     header = pmx.Header()
     header.signature = fs.read_bytes(4)
     if header.signature[:3] != pmx.PMX_SIGNATURE[:3]:
@@ -101,7 +114,8 @@ def _load_header(fs: PMXFileReadStream):
     return header
 
 
-def _load_vertex(fs: PMXFileReadStream):
+def _load_vertex(fs: PMXFileReadStream) -> pmx.Vertex:
+    """load vertex"""
     vertex = pmx.Vertex()
 
     vertex.vertex = fs.read_vector_3d()
@@ -114,7 +128,8 @@ def _load_vertex(fs: PMXFileReadStream):
     return vertex
 
 
-def _load_bone_weight(fs: PMXFileReadStream):
+def _load_bone_weight(fs: PMXFileReadStream) -> pmx.BoneWeight:
+    """load bone weight"""
     bone_weight = pmx.BoneWeight()
     bone_weight.type = fs.read_ubyte()
 
@@ -139,7 +154,8 @@ def _load_bone_weight(fs: PMXFileReadStream):
     return bone_weight
 
 
-def _load_sdef_bone_weight(fs: PMXFileReadStream):
+def _load_sdef_bone_weight(fs: PMXFileReadStream) -> pmx.SDEFBoneWeight:
+    """load SDEF bone weight"""
     weight = pmx.SDEFBoneWeight()
     weight.weight = fs.read_float()
     weight.c = fs.read_vector_3d()
@@ -148,7 +164,8 @@ def _load_sdef_bone_weight(fs: PMXFileReadStream):
     return weight
 
 
-def _load_face(fs: PMXFileReadStream):
+def _load_face(fs: PMXFileReadStream) -> tuple[int, int, int]:
+    """load face"""
     return (
         fs.read_vertex_index(),
         fs.read_vertex_index(),
@@ -156,7 +173,8 @@ def _load_face(fs: PMXFileReadStream):
     )
 
 
-def _load_texture(fs: PMXFileReadStream):
+def _load_texture(fs: PMXFileReadStream) -> pmx.Texture:
+    """load texture"""
     texture = pmx.Texture()
     texture.path = fs.read_str()
     texture.path = texture.path.replace('\\', os.path.sep)
@@ -165,7 +183,8 @@ def _load_texture(fs: PMXFileReadStream):
     return texture
 
 
-def _load_material(fs: PMXFileReadStream, num_textures: int):
+def _load_material(fs: PMXFileReadStream, num_textures: int) -> pmx.Material:
+    """load material"""
     material = pmx.Material()
 
     material.name = fs.read_str()
@@ -206,7 +225,8 @@ def _load_material(fs: PMXFileReadStream, num_textures: int):
     return material
 
 
-def _load_bone(fs: PMXFileReadStream):
+def _load_bone(fs: PMXFileReadStream) -> pmx.Bone:
+    """load bone"""
     bone = pmx.Bone()
     bone.name = fs.read_str()
     bone.name_en = fs.read_str()
@@ -263,7 +283,8 @@ def _load_bone(fs: PMXFileReadStream):
     return bone
 
 
-def _load_ik(fs: PMXFileReadStream):
+def _load_ik(fs: PMXFileReadStream) -> pmx.IK:
+    """load IK"""
     ik = pmx.IK()
     ik.target_bone = fs.read_bone_index()
     ik.iterations = fs.read_int()
@@ -272,7 +293,8 @@ def _load_ik(fs: PMXFileReadStream):
     return ik
 
 
-def _load_ik_link(fs: PMXFileReadStream):
+def _load_ik_link(fs: PMXFileReadStream) -> pmx.IKLink:
+    """load IK Link"""
     ik_link = pmx.IKLink()
     ik_link.target_bone = fs.read_bone_index()
     ik_link.has_rotation_limit = fs.read_byte()
@@ -286,7 +308,8 @@ def _load_ik_link(fs: PMXFileReadStream):
     return ik_link
 
 
-def _load_morph(fs: PMXFileReadStream):
+def _load_morph(fs: PMXFileReadStream) -> pmx.Morph:
+    """load morph"""
     morph = pmx.Morph()
     morph.name = fs.read_str()
     morph.name_en = fs.read_str()
@@ -310,21 +333,24 @@ def _load_morph(fs: PMXFileReadStream):
     return morph
 
 
-def _load_group_morph_offset(fs: PMXFileReadStream):
+def _load_group_morph_offset(fs: PMXFileReadStream) -> pmx.GroupMorphOffset:
+    """load group morph offset"""
     offset = pmx.GroupMorphOffset()
     offset.morph_index = fs.read_morph_index()
     offset.factor = fs.read_float()
     return offset
 
 
-def _load_vertex_morph_offset(fs: PMXFileReadStream):
+def _load_vertex_morph_offset(fs: PMXFileReadStream) -> pmx.VertexMorphOffset:
+    """load vertex morph offset"""
     offset = pmx.VertexMorphOffset()
     offset.vertex_index = fs.read_vertex_index()
     offset.offset = fs.read_vector_3d()
     return offset
 
 
-def _load_bone_morph_offset(fs: PMXFileReadStream):
+def _load_bone_morph_offset(fs: PMXFileReadStream) -> pmx.BoneMorphOffset:
+    """load bone morph offset"""
     offset = pmx.BoneMorphOffset()
     offset.bone_index = fs.read_bone_index()
     offset.location_offset = fs.read_vector_3d()
@@ -334,14 +360,16 @@ def _load_bone_morph_offset(fs: PMXFileReadStream):
     return offset
 
 
-def _load_uv_morph_offset(fs: PMXFileReadStream):
+def _load_uv_morph_offset(fs: PMXFileReadStream) -> pmx.UVMorphOffset:
+    """load UV morph offset"""
     offset = pmx.UVMorphOffset()
     offset.vertex_index = fs.read_vertex_index()
     offset.offset = fs.read_vector_4d()
     return offset
 
 
-def _load_material_morph_offset(fs: PMXFileReadStream):
+def _load_material_morph_offset(fs: PMXFileReadStream) -> pmx.MaterialMorphOffset:
+    """load material morph offset"""
     offset = pmx.MaterialMorphOffset()
     offset.material_index = fs.read_material_index()
     offset.offset_type = fs.read_byte()
@@ -357,7 +385,8 @@ def _load_material_morph_offset(fs: PMXFileReadStream):
     return offset
 
 
-def _load_display_frame(fs: PMXFileReadStream):
+def _load_display_frame(fs: PMXFileReadStream) -> pmx.DisplayFrame:
+    """load display"""
     display = pmx.DisplayFrame()
     display.name = fs.read_str()
     display.name_en = fs.read_str()
@@ -375,7 +404,8 @@ def _load_display_frame(fs: PMXFileReadStream):
     return display
 
 
-def _load_rigid(fs: PMXFileReadStream):
+def _load_rigid(fs: PMXFileReadStream) -> pmx.Rigid:
+    """load rigid"""
     rigid = pmx.Rigid()
     rigid.name = fs.read_str()
     rigid.name_en = fs.read_str()
@@ -405,7 +435,8 @@ def _load_rigid(fs: PMXFileReadStream):
     return rigid
 
 
-def _load_joint(fs: PMXFileReadStream):
+def _load_joint(fs: PMXFileReadStream) -> pmx.Joint:
+    """load joint"""
     joint = pmx.Joint()
     try:
         joint.name = fs.read_str()
@@ -445,7 +476,8 @@ def _load_joint(fs: PMXFileReadStream):
     return joint
 
 
-def _load_model(fs: PMXFileReadStream):
+def _load_model(fs: PMXFileReadStream) -> pmx.Model:
+    """load model"""
     model = pmx.Model()
 
     model.filename=fs.path
@@ -471,7 +503,15 @@ def _load_model(fs: PMXFileReadStream):
     return model
 
 
-def load(path: str):
+def load(path: str) -> pmx.Model:
+    """load model from pmx format file.
+
+    Args:
+        path (str): path to .pmx format.
+
+    Returns:
+        pmx.Model: model data.
+    """
     with PMXFileReadStream(path) as fs:
         header = _load_header(fs)
         fs.header = header
