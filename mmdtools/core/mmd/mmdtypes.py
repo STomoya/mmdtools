@@ -58,10 +58,9 @@ class Material(MMDComponent):
 
         self.texture_name: str = None
 
-        self.sphere_texture_index: str = None
-        self.sphere_texture_mode: int = None
+        self.sphere_texture_name: str = None
+        self.sphere_texture_mode: int = 0
 
-        self.is_shared_toon_texture: bool = None
         self.toon_texture_name: str = None
 
         self.comment: str = ''

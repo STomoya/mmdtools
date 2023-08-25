@@ -52,7 +52,6 @@ def from_pmx(pmx_model: pmx.Model):
         model.vertex.append(vertex)
 
     for face in pmx_model.face:
-        face = tuple(reversed(face)) # This might not be required depending on the renderer.
         model.face.append(face)
 
     face_vertex_count = 0
@@ -67,11 +66,17 @@ def from_pmx(pmx_model: pmx.Model):
         material.edge_color = np.array(pmx_material.edge_color)
         material.edge_size = pmx_material.edge_size
 
-        material.texture_name = pmx_model.texture[pmx_material.texture_index]
-        material.sphere_texture_index = pmx_material.sphere_texture_index
-        material.sphere_texture_mode = material.sphere_texture_mode
-        material.is_shared_toon_texture = pmx_material.is_shared_toon_texture
-        material.toon_texture_name = pmx_material.texture_name
+        num_textures = len(pmx_model.texture)
+        material.texture_name = pmx_model.texture[pmx_material.texture_index].path
+
+        if pmx_material.sphere_texture_index in range(num_textures):
+            material.sphere_texture_name = pmx_model.texture[pmx_material.sphere_texture_index].path
+            material.sphere_texture_mode = pmx_material.sphere_texture_mode
+
+        if pmx_material.is_shared_toon_texture:
+            material.toon_texture_name = f'toon{pmx_material.toon_texture_number+1:02}.bmp'
+        elif pmx_material.sphere_texture_index in range(num_textures):
+            material.toon_texture_name = pmx_model.texture[pmx_material.toon_texture_number].path
 
         material.comment = pmx_material.comment
 
