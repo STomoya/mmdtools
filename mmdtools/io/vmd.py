@@ -15,6 +15,9 @@ class VMDFileReadStream(FileReadStream):
         string = byte_string.decode(encoding=decode, errors='replace') if decode else byte_string
         return string
 
+    def read_byte_vector(self, length: int):
+        return struct.unpack(f'<{length}b', self._fp.read(length))
+
 
 def _loop_load(fs: VMDFileReadStream, load_fn: Callable, **kwargs) -> None:
     """load data iteratively. The data loaded inside the `load_fn` must be saved to somewere else INSIDE the
@@ -93,7 +96,7 @@ def _load_bone_frame_key(fs: VMDFileReadStream) -> vmd.BoneFrameKey:
     frame_key.rotation = fs.read_vector_4d()
     if not any(frame_key.rotation):
         frame_key.rotation = (0.0, 0.0, 0.0, 1.0)
-    frame_key.interpolation = fs.read_vector(16)
+    frame_key.interpolation = fs.read_byte_vector(64)
     return frame_key
 
 

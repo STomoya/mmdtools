@@ -53,6 +53,7 @@ class Material(MMDComponent):
 
         self.is_double_sided: bool = None
 
+        self.enabled_edge: bool = None
         self.edge_color: np.ndarray = None
         self.edge_size: float = None
 
@@ -77,6 +78,7 @@ class Bone(MMDComponent):
         self.location: np.ndarray = None
         self.weight: float = 1.0
         self.parent_index: int = None
+        self.level: int = 0
 
         self.is_rotation: bool = None
         self.is_movable: bool = None

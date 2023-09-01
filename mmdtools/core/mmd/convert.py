@@ -15,7 +15,6 @@ def atleast_4d(value, fill=0, dtype=int):
     out[:len(value)] = value
     return out
 
-
 def from_pmx(pmx_model: pmx.Model):
     """convert PMX format model to MMD."""
     model = mmdtypes.Model()
@@ -46,7 +45,7 @@ def from_pmx(pmx_model: pmx.Model):
             vertex.sdef_options.c = pmx_vertex.weight.weights.c
             vertex.sdef_options.r0 = pmx_vertex.weight.weights.r0
             vertex.sdef_options.r1 = pmx_vertex.weight.weights.r1
-        vertex.bone_weights = atleast_4d(weight)
+        vertex.bone_weights = atleast_4d(weight, dtype=np.float32)
         vertex.edge_scale = pmx_vertex.edge_scale
 
         model.vertex.append(vertex)
@@ -63,6 +62,7 @@ def from_pmx(pmx_model: pmx.Model):
         material.specular_scale = pmx_material.specular_scale
         material.mirror_color = np.array(pmx_material.ambient_color)
 
+        material.enabled_edge = pmx_material.enabled_toon_edge
         material.edge_color = np.array(pmx_material.edge_color)
         material.edge_size = pmx_material.edge_size
 
@@ -94,6 +94,7 @@ def from_pmx(pmx_model: pmx.Model):
 
         bone.location = np.array(pmx_bone.location)
         bone.parent_index = pmx_bone.parent_index
+        bone.weight = pmx_bone
 
         bone.is_rotation = pmx_bone.is_rotation
         bone.is_movable = pmx_bone.is_movable
