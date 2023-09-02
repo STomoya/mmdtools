@@ -4,6 +4,7 @@ import os
 from contextlib import contextmanager
 import numpy as np
 import OpenGL.GL as gl
+from mmdtools import const
 
 from mmdtools.viewer.common.typeanno import *
 
@@ -94,6 +95,25 @@ class Shader:
         gl.glAttachShader(self.program, shader)
         gl.glDeleteShader(shader)
         return True
+
+
+    @classmethod
+    def create(cls, type: str='polygon') -> Shader:
+        if type == 'edge':
+            return cls(
+                vertex_shader_source=const.GLSL_EDGE_VERTEX_SHADER_SOURCE,
+                fragment_shader_source=const.GLSL_EDGE_FRAGMENT_SHADER_SOURCE
+            )
+        elif type == 'polygon':
+            return cls(
+                vertex_shader_source=const.GLSL_VERTEX_SHADER_SOURCE,
+                fragment_shader_source=const.GLSL_FRAGMENT_SHADER_SOURCE
+            )
+        else:
+            raise Exception(
+                ('Unknown shader type. either create object using '
+                 'constructor or pass "polygon" or "edge" as type.')
+            )
 
 
     @contextmanager
