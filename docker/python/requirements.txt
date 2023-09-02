@@ -4,8 +4,11 @@ scipy
 numpy
 PyOpenGL
 PyOpenGL_accelerate
-pybullet
+# pybullet
 # PyODE
 Pillow
 # pillow-simd
 glfw
+
+opencv-python
+pyrr
