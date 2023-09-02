@@ -2,8 +2,8 @@
 
 out vec4 FragColor;
 
-uniform float uNear = 0.1;
-uniform float uFar = 50.0;
+uniform float uNear;
+uniform float uFar;
 
 float LinearizeDepth(float depth)
 {
