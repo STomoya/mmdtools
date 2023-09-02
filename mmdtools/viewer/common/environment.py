@@ -128,6 +128,7 @@ class Environment:
 
 
 class Light:
+    """attributes for light."""
     def __init__(self,
         position: Vector3D=(0.0, 0.0, 0.0), color: Vector3D=(1.0, 1.0, 1.0),
         ambient: Vector3D=(1.0, 1.0, 1.0), diffuse: Vector3D=(0.0, 0.0, 0.0), specular: Vector3D=(0.0, 0.0, 0.0)
@@ -141,6 +142,7 @@ class Light:
 
 
 class Camera:
+    """attributes for camera."""
     def __init__(self,
         position: Vector3D=(0.0, 10.0, -30.0), target: Vector3D=(0.0, 10.0, 0.0), up: Vector3D=(0.0, 1.0, 0.0)
     ) -> None:
@@ -151,6 +153,7 @@ class Camera:
 
 
 class Projection:
+    """attributes for projection."""
     def __init__(self,
         fovy: float=45.0, aspect: float=1.0, near: float=0.1, far: float=50.0
     ) -> None:
