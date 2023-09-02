@@ -109,6 +109,11 @@ class Shader:
                 vertex_shader_source=const.GLSL_VERTEX_SHADER_SOURCE,
                 fragment_shader_source=const.GLSL_FRAGMENT_SHADER_SOURCE
             )
+        elif type == 'depth':
+            return cls(
+                vertex_shader_source=const.GLSL_DEPTH_VERTEX_SHADER_SOURCE,
+                fragment_shader_source=const.GLSL_DEPTH_FRAGMENT_SHADER_SOURCE
+            )
         else:
             raise Exception(
                 ('Unknown shader type. either create object using '
