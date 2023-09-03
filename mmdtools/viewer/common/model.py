@@ -24,6 +24,8 @@ class Model:
         self.vertex_normal: np.ndarray = np.array([v.normal for v in self.vertex_data], dtype=np.float32).reshape(-1)
         self.vertex_edge_scale: np.ndarray = np.array([v.edge_scale for v in self.vertex_data], dtype=np.float32).reshape(-1)
 
+        self.face: np.ndarray = np.array(model_data.face, dtype=np.uint16).reshape(-1)
+
         self.motion_bones: list[Bone] = []
         # for fast searching of bones. O(1).
         self.name2mbone_index: dict[str, int] = {}
