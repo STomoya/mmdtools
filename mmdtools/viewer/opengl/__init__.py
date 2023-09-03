@@ -1,3 +1,6 @@
+from mmdtools.viewer.opengl.window import Window
+from mmdtools.viewer.opengl.viewer import Viewer
+
 try:
     import OpenGL
     IS_OPENGL_AVAILABLE = True
