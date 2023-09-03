@@ -138,9 +138,9 @@ class BoneMotionKeyFrame:
         Returns:
             np.ndarray: interpolated translation.
         """
-        bezier_x_rate = solve_bezier(**self.bezier_points['x'], linear_rate)
-        bezier_y_rate = solve_bezier(**self.bezier_points['y'], linear_rate)
-        bezier_z_rate = solve_bezier(**self.bezier_points['z'], linear_rate)
+        bezier_x_rate = solve_bezier(**self.bezier_points['x'], linear_rate=linear_rate)
+        bezier_y_rate = solve_bezier(**self.bezier_points['y'], linear_rate=linear_rate)
+        bezier_z_rate = solve_bezier(**self.bezier_points['z'], linear_rate=linear_rate)
         rate = np.array([bezier_x_rate, bezier_y_rate, bezier_z_rate])
         return self.next_frame.translation * rate + self.translation * (1 - rate)
 
@@ -154,5 +154,5 @@ class BoneMotionKeyFrame:
         Returns:
             np.ndarray: interpolated rotation.
         """
-        bezier_r_rate = solve_bezier(**self.bezier_points['r'], linear_rate)
+        bezier_r_rate = solve_bezier(**self.bezier_points['r'], linear_rate=linear_rate)
         return quaternion.slerp(self.rotation, self.next_frame.rotation, bezier_r_rate)

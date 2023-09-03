@@ -20,9 +20,9 @@ class Mesh:
 
         # textures
         self.texture = Texture.create(material.texture_name)
-        self.sphere_texture = Texture.create(material.sphere_texture_name)
+        self.sphere_texture = Texture.create(material.sphere_texture_name, is_sphere=True)
         self.sphere_texture_mode = material.sphere_texture_mode
-        self.toon_texture = Texture.create(material.toon_texture_name)
+        self.toon_texture = Texture.create(material.toon_texture_name, is_toon=True)
         self.use_toon_texture = 0.0 if self.toon_texture.gl_texture is None else 1.0
 
         # color
@@ -55,8 +55,6 @@ class Mesh:
             return
 
         elif draw_edge:
-            # draw only on back side.
-            gl.CullFace(gl.GL_FRONT)
 
             with self.edge_shader.drawing():
 

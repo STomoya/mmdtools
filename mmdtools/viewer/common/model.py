@@ -51,7 +51,7 @@ class Model:
         # we first create bone objects because we need reference to these objects to properly initialize
         # attributes in these objects.
         for i, bone_data in enumerate(self.bone_data):
-            bone = Bone(bone_data)
+            bone = Bone(i, bone_data)
             self.motion_bones.append(bone)
             self.name2mbone_index[bone.name] = i
             self.level2mbone_indices[bone.level].append(i)
