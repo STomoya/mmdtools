@@ -14,11 +14,12 @@ class Window:
     Args:
         height (int): height of window.
         width (int): width of window.
+        visible (bool): visibility of window. Default: False.
         background_color (Vector3D): background color. Default: (1.0, 1.0, 1.0).
         target_fps (int): target FPS. Default: 60.
     """
     def __init__(self,
-        height: int, width: int, background_color: Vector3D=(1.0, 1.0, 1.0), target_fps: int=60
+        height: int, width: int, visible: bool=False, background_color: Vector3D=(1.0, 1.0, 1.0), target_fps: int=60
     ) -> None:
         self.height = height
         self.width = width
@@ -29,7 +30,7 @@ class Window:
             raise Exception()
 
         # set window options
-        glfw.window_hint(glfw.VISIBLE, False)
+        glfw.window_hint(glfw.VISIBLE, visible)
         glfw.window_hint(glfw.SAMPLES, 4)
 
         # create window
@@ -41,6 +42,15 @@ class Window:
         self.window = window
 
         glfw.make_context_current(window)
+        gl.glClearColor(*background_color, 1.0)
+
+
+    def set_background_color(self, background_color: Vector3D):
+        """set background color.
+
+        Args:
+            background_color (Vector3D): a tuple representing color.
+        """
         gl.glClearColor(*background_color, 1.0)
 
 
