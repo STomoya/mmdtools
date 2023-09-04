@@ -3,9 +3,7 @@ from mmdtools.io import load_model
 from mmdtools.io.vmd import load as load_motion
 from mmdtools.viewer import Model
 from mmdtools.viewer import Motion
-from mmdtools.viewer.opengl import Viewer
-from mmdtools.viewer.opengl import Window
-
+from mmdtools.viewer.opengl import is_opengl_available
 
 def get_args():
     parser = argparse.ArgumentParser()
@@ -16,6 +14,12 @@ def get_args():
 
 
 def main():
+    if is_opengl_available():
+        from mmdtools.viewer.opengl import Viewer
+        from mmdtools.viewer.opengl import Window
+    else:
+        raise Exception(f'PyOpenGL is not available.')
+
     args = get_args()
 
     model_data = load_model(args.model, raw=False)

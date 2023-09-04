@@ -1,8 +1,6 @@
-from mmdtools.viewer.opengl.window import Window
-from mmdtools.viewer.opengl.viewer import Viewer
-
 try:
     import OpenGL
+    import glfw
     IS_OPENGL_AVAILABLE = True
 except ImportError as e:
     print(e)
@@ -10,3 +8,8 @@ except ImportError as e:
 
 
 def is_opengl_available(): return IS_OPENGL_AVAILABLE
+
+
+if IS_OPENGL_AVAILABLE:
+    from mmdtools.viewer.opengl.window import Window
+    from mmdtools.viewer.opengl.viewer import Viewer
