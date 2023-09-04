@@ -43,8 +43,6 @@ class Window:
         glfw.make_context_current(window)
         gl.glClearColor(*background_color, 1.0)
 
-        self._is_polygon_mode_fill = True
-
 
     def before_render(self) -> None:
         """functions to run before rendering
