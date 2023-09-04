@@ -10,6 +10,12 @@ from mmdtools.viewer.opengl.shader import Shader
 
 
 class Viewer:
+    """Viewer class. Responsible for visualization.
+
+    Args:
+        model (Model): model data.
+        motion (Motion): motion data. Pass `None` if no motion data.
+    """
     def __init__(self, model: Model, motion: Motion) -> None:
         self.model = model
         self.motion = motion
@@ -33,6 +39,8 @@ class Viewer:
 
 
     def _create_mesh(self):
+        """create mesh for visulization.
+        """
         total_face = self.model.face.copy()
         for material_index, material_data in enumerate(self.model.material_data):
             mesh_face = total_face[:material_data.face_vertex_size].copy()
@@ -44,6 +52,8 @@ class Viewer:
 
 
     def switch_polygon_mode(self):
+        """switch polygon mode. If wireframe mode, switch to fill and vice versa.
+        """
         if self._is_polygon_mode_fill:
             gl.glPolygonMode(gl.GL_FRONT_AND_BACK, gl.GL_LINE)
             self._is_polygon_mode_fill = False
@@ -53,7 +63,8 @@ class Viewer:
 
 
     def set_variables(self):
-
+        """set variables to shader.
+        """
         bone_transforms = self.model.create_vertex_transform_matrix()
         bone_transforms_row0 = bone_transforms[:, 0]
         bone_transforms_row1 = bone_transforms[:, 1]
@@ -86,7 +97,8 @@ class Viewer:
 
 
     def draw(self):
-
+        """draw model.
+        """
         # enable depth test
         gl.glEnable(gl.GL_DEPTH_TEST)
         gl.glDepthFunc(gl.GL_LEQUAL)
@@ -128,6 +140,8 @@ class Viewer:
 
 
     def step(self):
+        """step motion.
+        """
         if self.motion is not None:
             self.motion.step()
             self.model.update_bones()
