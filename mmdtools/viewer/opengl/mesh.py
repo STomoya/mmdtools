@@ -10,7 +10,19 @@ from mmdtools.viewer.opengl.texture import Texture, TextureUnit
 
 
 class Mesh:
-    def __init__(self, index: int, material: Material, face: np.ndarray, shader: Shader, edge_shader: Shader|None=None) -> None:
+    """mesh class. for rendering both polygons and edges.
+
+    Args:
+        index (int): used as id to bind faces to shader.
+        material (Material): MMD material data.
+        face (np.ndarray): indices for face.
+        shader (np.ndarray): Normal shader object.
+        edge_shader (np.ndarray, optional): shader for drawing edges. `None` results in rendering
+            without edges. Default: None.
+    """
+    def __init__(self,
+        index: int, material: Material, face: np.ndarray, shader: Shader, edge_shader: Shader|None=None
+    ) -> None:
         self.index = index
         self.shader = shader
         self.edge_shader = edge_shader
@@ -47,7 +59,12 @@ class Mesh:
         self._material_data = material
 
 
-    def draw(self, draw_edge=False):
+    def draw(self, draw_edge: bool=False):
+        """draw mesh.
+
+        Args:
+            draw_edge (bool): If `True`, switch rendering to edge mode. Default: False.
+        """
 
         # edge drawing path.
 
