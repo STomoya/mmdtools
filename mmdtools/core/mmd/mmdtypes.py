@@ -76,7 +76,6 @@ class Bone(MMDComponent):
         self.name_en: str = None
 
         self.location: np.ndarray = None
-        self.weight: float = 1.0
         self.parent_index: int = None
         self.level: int = 0
 

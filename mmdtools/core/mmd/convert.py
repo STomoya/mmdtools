@@ -94,7 +94,6 @@ def from_pmx(pmx_model: pmx.Model):
 
         bone.location = np.array(pmx_bone.location)
         bone.parent_index = pmx_bone.parent_index
-        bone.weight = pmx_bone
 
         bone.is_rotation = pmx_bone.is_rotation
         bone.is_movable = pmx_bone.is_movable
