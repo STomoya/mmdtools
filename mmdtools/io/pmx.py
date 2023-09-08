@@ -206,18 +206,15 @@ def _load_material(fs: PMXFileReadStream, num_textures: int) -> pmx.Material:
     material.edge_color = fs.read_vector_4d()
     material.edge_size = fs.read_float()
 
-    _texture_index = lambda index: index if 0 <= index < num_textures else -1
-    material.texture_index = _texture_index(fs.read_texture_index())
-    material.sphere_texture_index = _texture_index(fs.read_texture_index())
+    material.texture_index = fs.read_texture_index()
+    material.sphere_texture_index = fs.read_texture_index()
     material.sphere_texture_mode = fs.read_ubyte()
 
     material.is_shared_toon_texture = fs.read_byte() == 1
-    material.texture_name = None
     if material.is_shared_toon_texture:
         material.toon_texture_number = fs.read_byte()
-        material.texture_name = f'toon{material.toon_texture_number+1:02}.bmp'
     else:
-        material.toon_texture_number = _texture_index(fs.read_texture_index())
+        material.toon_texture_number = fs.read_texture_index()
 
     material.comment = fs.read_str()
     material.face_vertex_count = fs.read_int()

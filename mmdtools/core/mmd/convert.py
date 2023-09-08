@@ -15,7 +15,6 @@ def atleast_4d(value, fill=0, dtype=int):
     out[:len(value)] = value
     return out
 
-
 def from_pmx(pmx_model: pmx.Model):
     """convert PMX format model to MMD."""
     model = mmdtypes.Model()
@@ -46,13 +45,12 @@ def from_pmx(pmx_model: pmx.Model):
             vertex.sdef_options.c = pmx_vertex.weight.weights.c
             vertex.sdef_options.r0 = pmx_vertex.weight.weights.r0
             vertex.sdef_options.r1 = pmx_vertex.weight.weights.r1
-        vertex.bone_weights = atleast_4d(weight)
+        vertex.bone_weights = atleast_4d(weight, dtype=np.float32)
         vertex.edge_scale = pmx_vertex.edge_scale
 
         model.vertex.append(vertex)
 
     for face in pmx_model.face:
-        face = tuple(reversed(face)) # This might not be required depending on the renderer.
         model.face.append(face)
 
     face_vertex_count = 0
@@ -64,14 +62,21 @@ def from_pmx(pmx_model: pmx.Model):
         material.specular_scale = pmx_material.specular_scale
         material.mirror_color = np.array(pmx_material.ambient_color)
 
+        material.enabled_edge = pmx_material.enabled_toon_edge
         material.edge_color = np.array(pmx_material.edge_color)
         material.edge_size = pmx_material.edge_size
 
-        material.texture_name = pmx_model.texture[pmx_material.texture_index]
-        material.sphere_texture_index = pmx_material.sphere_texture_index
-        material.sphere_texture_mode = material.sphere_texture_mode
-        material.is_shared_toon_texture = pmx_material.is_shared_toon_texture
-        material.toon_texture_name = pmx_material.texture_name
+        num_textures = len(pmx_model.texture)
+        material.texture_name = pmx_model.texture[pmx_material.texture_index].path
+
+        if pmx_material.sphere_texture_index in range(num_textures):
+            material.sphere_texture_name = pmx_model.texture[pmx_material.sphere_texture_index].path
+            material.sphere_texture_mode = pmx_material.sphere_texture_mode
+
+        if pmx_material.is_shared_toon_texture:
+            material.toon_texture_name = f'toon{pmx_material.toon_texture_number+1:02}.bmp'
+        elif pmx_material.sphere_texture_index in range(num_textures):
+            material.toon_texture_name = pmx_model.texture[pmx_material.toon_texture_number].path
 
         material.comment = pmx_material.comment
 

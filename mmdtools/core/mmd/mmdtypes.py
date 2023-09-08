@@ -53,15 +53,15 @@ class Material(MMDComponent):
 
         self.is_double_sided: bool = None
 
+        self.enabled_edge: bool = None
         self.edge_color: np.ndarray = None
         self.edge_size: float = None
 
         self.texture_name: str = None
 
-        self.sphere_texture_index: str = None
-        self.sphere_texture_mode: int = None
+        self.sphere_texture_name: str = None
+        self.sphere_texture_mode: int = 0
 
-        self.is_shared_toon_texture: bool = None
         self.toon_texture_name: str = None
 
         self.comment: str = ''
@@ -76,8 +76,8 @@ class Bone(MMDComponent):
         self.name_en: str = None
 
         self.location: np.ndarray = None
-        self.weight: float = 1.0
         self.parent_index: int = None
+        self.level: int = 0
 
         self.is_rotation: bool = None
         self.is_movable: bool = None
