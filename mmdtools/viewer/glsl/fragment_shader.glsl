@@ -53,7 +53,7 @@ void main() {
     vec2 vSphereCoord = ShareUV;
     if ( uSphereTextureMode == 1.0 ) {
         vColor *= texture2D( uSphereTexture, vSphereCoord ).rgb;
-    } else if ( uSphereTextureMode == 3.0 ) {
+    } else if ( uSphereTextureMode == 2.0 ) {
         vColor += texture2D( uSphereTexture, vSphereCoord ).rgb;
     }
 
