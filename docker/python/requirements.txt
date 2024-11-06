@@ -1,0 +1,14 @@
+mypy
+scipy
+# numba
+numpy<2.0.0
+PyOpenGL
+PyOpenGL_accelerate
+# pybullet
+# PyODE
+Pillow
+# pillow-simd
+glfw
+
+opencv-python
+pyrr
