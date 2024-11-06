@@ -1,6 +1,4 @@
-
 import os
-
 
 MODULE_ROOT_DIR = os.path.dirname(__file__)
 TOON_ROOT_DIR = os.path.join(MODULE_ROOT_DIR, 'toon')
@@ -15,3 +13,5 @@ GLSL_EDGE_FRAGMENT_SHADER_SOURCE = os.path.join(_GLSL_SHADER_DIR, 'edge_fragment
 
 GLSL_DEPTH_VERTEX_SHADER_SOURCE = os.path.join(_GLSL_SHADER_DIR, 'depth_vertex_shader.glsl')
 GLSL_DEPTH_FRAGMENT_SHADER_SOURCE = os.path.join(_GLSL_SHADER_DIR, 'depth_fragment_shader.glsl')
+
+GLSL_DEFAULT_NUM_BONES = 200

@@ -28,10 +28,14 @@ class Viewer:
         self.shader.set_vbo('aVertex', 3, self.model.vertex_position)
         self.shader.set_vbo('aUV', 2, self.model.vertex_uv)
         self.shader.set_vbo('aNormal', 3, self.model.vertex_normal)
+        self.shader.set_vbo('aBoneIndex', 4, self.model.vertex_bone_ids)
+        self.shader.set_vbo('aBoneWeights', 4, self.model.vertex_bone_weights)
         self.edge_shader = Shader.create(type='edge')
         self.edge_shader.set_vbo('aVertex', 3, self.model.vertex_position)
         self.edge_shader.set_vbo('aNormal', 3, self.model.vertex_normal)
         self.edge_shader.set_vbo('aEdgeScale', 1, self.model.vertex_edge_scale)
+        self.edge_shader.set_vbo('aBoneIndex', 4, self.model.vertex_bone_ids)
+        self.edge_shader.set_vbo('aBoneWeights', 4, self.model.vertex_bone_weights)
 
         self._create_mesh()
 
@@ -65,11 +69,12 @@ class Viewer:
     def set_variables(self):
         """set variables to shader.
         """
-        bone_transforms = self.model.create_vertex_transform_matrix()
-        bone_transforms_row0 = bone_transforms[:, 0]
-        bone_transforms_row1 = bone_transforms[:, 1]
-        bone_transforms_row2 = bone_transforms[:, 2]
-        bone_transforms_row3 = bone_transforms[:, 3]
+        # bone_transforms = self.model.create_vertex_transform_matrix()
+        # bone_transforms_row0 = bone_transforms[:, 0]
+        # bone_transforms_row1 = bone_transforms[:, 1]
+        # bone_transforms_row2 = bone_transforms[:, 2]
+        # bone_transforms_row3 = bone_transforms[:, 3]
+        bone_transforms = self.model.collect_bone_transforms()
 
 
         with self.shader.use_program():
@@ -81,19 +86,13 @@ class Viewer:
             self.shader.set_mat4('uProjectionM', self.env.projection_matrix)
             self.shader.set_mat4('uModelViewM', self.env.model_view_matrix)
             self.shader.set_mat4('uITModelViewM', self.env.it_model_view_matrix)
-            self.shader.set_vbo('aTransform0', 4, bone_transforms_row0)
-            self.shader.set_vbo('aTransform1', 4, bone_transforms_row1)
-            self.shader.set_vbo('aTransform2', 4, bone_transforms_row2)
-            self.shader.set_vbo('aTransform3', 4, bone_transforms_row3)
+            self.shader.set_mat4('uBoneTransform', bone_transforms, bone_transforms.shape[0])
 
 
         with self.edge_shader.use_program():
             self.edge_shader.set_mat4('uProjectionM', self.env.projection_matrix)
             self.edge_shader.set_mat4('uModelViewM', self.env.model_view_matrix)
-            self.edge_shader.set_vbo('aTransform0', 4, bone_transforms_row0)
-            self.edge_shader.set_vbo('aTransform1', 4, bone_transforms_row1)
-            self.edge_shader.set_vbo('aTransform2', 4, bone_transforms_row2)
-            self.edge_shader.set_vbo('aTransform3', 4, bone_transforms_row3)
+            self.edge_shader.set_mat4('uBoneTransform', bone_transforms, bone_transforms.shape[0])
 
 
     def draw(self):

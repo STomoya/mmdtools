@@ -13,6 +13,7 @@ class Model:
 
     Args:
         model_data (mmd.Model): model data.
+
     """
     def __init__(self, model_data: mmd.Model) -> None:
         self.vertex_data: list[mmd.Vertex] = model_data.vertex
@@ -23,6 +24,8 @@ class Model:
         self.vertex_uv: np.ndarray = np.array([v.uv for v in self.vertex_data], dtype=np.float32).reshape(-1)
         self.vertex_normal: np.ndarray = np.array([v.normal for v in self.vertex_data], dtype=np.float32).reshape(-1)
         self.vertex_edge_scale: np.ndarray = np.array([v.edge_scale for v in self.vertex_data], dtype=np.float32).reshape(-1)
+        self.vertex_bone_ids: np.ndarray = np.array([v.bone_ids for v in self.vertex_data], dtype=np.float32).reshape(-1)
+        self.vertex_bone_weights: np.ndarray = np.array([v.bone_weights for v in self.vertex_data], dtype=np.float32).reshape(-1)
 
         self.face: np.ndarray = np.array(model_data.face, dtype=np.uint16).reshape(-1)
 
@@ -42,6 +45,7 @@ class Model:
 
         Args:
             force (bool): force create bones, even if already initialized.
+
         """
 
         if self._is_bone_initialized and not force:
@@ -94,6 +98,7 @@ class Model:
 
         Returns:
             Bone: motion bone object.
+
         """
         return self.motion_bones[self.name2mbone_index[bone_name]]
 
@@ -132,6 +137,7 @@ class Model:
 
         Returns:
             np.ndarray: trasformation matrices for all vertices. [N,4,4], N is number of vertices.
+
         """
         transforms = []
         bone_transforms = [bone.local_matrix for bone in self.motion_bones]
@@ -148,6 +154,18 @@ class Model:
             transforms.append(transform)
         return np.array(transforms, dtype=np.float32)
 
+    def collect_bone_transforms(self) -> np.ndarray:
+        """Collect transformation matrices from all bones.
+
+        The matrices are stacked on the first dimension, forming a tensor of shape [Nx4x4] where N is the number of
+        bones.
+
+        Returns:
+            np.ndarray: trasformation matrices for all bones. [N,4,4]
+
+        """
+        bone_transforms = np.array([bone.local_matrix for bone in self.motion_bones], dtype=np.float32)
+        return bone_transforms
 
     def reset_motion(self) -> None:
         """reset all motion bones to initial position."""
