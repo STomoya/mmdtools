@@ -1,31 +1,20 @@
-
 import numpy as np
+
 from mmdtools.core import pmx
 from mmdtools.core.mmd import mmdtypes
 
-
-__all__ = [
-    'from_pmx'
-]
+__all__ = ['from_pmx']
 
 
 def atleast_4d(value, fill=0, dtype=int):
-    out = np.full((4, ), fill_value=fill, dtype=dtype)
+    out = np.full((4,), fill_value=fill, dtype=dtype)
     value = np.atleast_1d(np.array(value))
-    out[:len(value)] = value
+    out[: len(value)] = value
     return out
 
-def from_pmx(pmx_model: pmx.Model):
-    """convert PMX format model to MMD."""
-    model = mmdtypes.Model()
 
-    metadata = mmdtypes.Metadata()
-    metadata.name = pmx_model.name
-    metadata.name_en = pmx_model.name_en
-    metadata.comment = pmx_model.comment
-    metadata.comment_en = pmx_model.comment_en
-    model.metadata = metadata
-
+def _convert_vertex(model: mmdtypes.Model, pmx_model: pmx.Model) -> None:
+    """Convert pmx format vertex into mmdtypes.Model format."""
     for pmx_vertex in pmx_model.vertex:
         vertex = mmdtypes.Vertex()
 
@@ -50,9 +39,9 @@ def from_pmx(pmx_model: pmx.Model):
 
         model.vertex.append(vertex)
 
-    for face in pmx_model.face:
-        model.face.append(face)
 
+def _convert_material(model: mmdtypes.Model, pmx_model: pmx.Model) -> None:
+    """Convert pmx format materials into mmdtypes.Model format."""
     face_vertex_count = 0
     for pmx_material in pmx_model.material:
         material = mmdtypes.Material()
@@ -86,6 +75,9 @@ def from_pmx(pmx_model: pmx.Model):
 
         model.material.append(material)
 
+
+def _convert_bone(model: mmdtypes.Model, pmx_model: pmx.Model) -> None:
+    """Convert pmx format bones into mmdtypes.Model format."""
     for pmx_bone in pmx_model.bone:
         bone = mmdtypes.Bone()
 
@@ -110,5 +102,26 @@ def from_pmx(pmx_model: pmx.Model):
             bone.ik_link_bones = [ik_link.target_bone for ik_link in pmx_bone.ik.ik_links]
 
         model.bone.append(bone)
+
+
+def from_pmx(pmx_model: pmx.Model):
+    """convert PMX format model to MMD."""
+    model = mmdtypes.Model()
+
+    metadata = mmdtypes.Metadata()
+    metadata.name = pmx_model.name
+    metadata.name_en = pmx_model.name_en
+    metadata.comment = pmx_model.comment
+    metadata.comment_en = pmx_model.comment_en
+    model.metadata = metadata
+
+    _convert_vertex(model, pmx_model)
+
+    for face in pmx_model.face:
+        model.face.append(face)
+
+    _convert_material(model, pmx_model)
+
+    _convert_bone(model, pmx_model)
 
     return model

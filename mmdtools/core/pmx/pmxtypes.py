@@ -12,7 +12,8 @@ __all__ = [
     'BoneWeightType',
     'Header',
     'Vertex',
-    'BoneWeight', 'SDEFBoneWeight',
+    'BoneWeight',
+    'SDEFBoneWeight',
     'Texture',
     'Material',
     'Bone',
@@ -27,7 +28,7 @@ __all__ = [
     'DisplayFrame',
     'Rigid',
     'Joint',
-    'Model'
+    'Model',
 ]
 
 
@@ -35,18 +36,19 @@ PMX_SIGNATURE = b'PMX '
 PMX_VERSION = 2.0
 
 
-Vector3D: TypeAlias = "tuple[float, float, float]"
-Vector4D: TypeAlias = "tuple[float, float, float, float]"
+Vector3D: TypeAlias = 'tuple[float, float, float]'
+Vector4D: TypeAlias = 'tuple[float, float, float, float]'
 
 
-class PMXComponent(MMDComponent): pass
+class PMXComponent(MMDComponent):
+    pass
 
 
 class BoneWeightType(IntEnum):
     BDEF1 = 0
     BDEF2 = 1
     BDEF4 = 2
-    SDEF  = 3
+    SDEF = 3
 
 
 class Header(PMXComponent):
@@ -95,7 +97,6 @@ class Texture(PMXComponent):
 
 class Material(PMXComponent):
     def __init__(self) -> None:
-
         self.name: str = None
         self.name_en: str = ''
 
@@ -190,7 +191,9 @@ class Morph(PMXComponent):
         else:
             return None
 
-class MorphOffset(PMXComponent): pass
+
+class MorphOffset(PMXComponent):
+    pass
 
 
 class GroupMorphOffset(MorphOffset):
@@ -288,7 +291,6 @@ class Joint(PMXComponent):
         self.spring_rotation_constant: Vector3D = None
 
 
-
 class Model:
     def __init__(self) -> None:
         self.filename: str
@@ -315,12 +317,9 @@ class Model:
         face_display.name = '表情'
         face_display.name_en = 'Facial'
 
-        self.display: list[DisplayFrame] = [
-            root_display, face_display
-        ]
+        self.display: list[DisplayFrame] = [root_display, face_display]
         self.rigid: list[Rigid] = []
         self.joint: list[Joint] = []
-
 
     def __repr__(self) -> str:
         num_ik = sum(1 for bone in self.bone if bone.is_ik)
@@ -328,8 +327,7 @@ class Model:
             '-' * 64 + '\n'
             f'Filename  : {self.filename}\n'
             f'Model name: {self.name}\n'
-            f'Comment   :\n{self.comment}\n'
-            + '-' * 64 + '\n'
+            f'Comment   :\n{self.comment}\n' + '-' * 64 + '\n'
             'Statistics\n'
             f'    Num. Vertex  : {len(self.vertex)}\n'
             f'    Num. Face    : {len(self.face)}\n'
@@ -340,6 +338,5 @@ class Model:
             f'    Num. Morph   : {len(self.morph)}\n'
             f'    Num. Display : {len(self.display)}\n'
             f'    Num. Rigid   : {len(self.rigid)}\n'
-            f'    Num. Joint   : {len(self.joint)}\n'
-            + '-' * 64
+            f'    Num. Joint   : {len(self.joint)}\n' + '-' * 64
         )

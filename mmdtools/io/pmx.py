@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import os
 import struct
-from typing import Any, Callable
 import warnings
+from typing import Any, Callable
 
 from mmdtools.core import pmx
 from mmdtools.io.utils import FileReadStream, parse_flags
@@ -24,7 +24,7 @@ class PMXFileReadStream(FileReadStream):
         assert isinstance(__incoming, pmx.Header)
         self._header = __incoming
 
-    def _read_index(self, size: int, unsigned: bool=False) -> int:
+    def _read_index(self, size: int, unsigned: bool = False) -> int:
         """read index value with the specific size.
 
         Args:
@@ -33,6 +33,7 @@ class PMXFileReadStream(FileReadStream):
 
         Returns:
             int: index
+
         """
         unpack_format = self._index_size_formats[size]
         unpack_format = unpack_format.upper() if unsigned else unpack_format
@@ -66,9 +67,12 @@ class PMXFileReadStream(FileReadStream):
 """loading functions"""
 
 
-def _loop_load(fs: PMXFileReadStream, load_fn: Callable, output: list=None, step: int=1, **kwargs: dict[str, Any]) -> list:
-    """load data iteratively using the given `load_fn`. If `output` is given, all return values will be appended to this list.
-    If not new list will be made.
+def _loop_load(
+    fs: PMXFileReadStream, load_fn: Callable, output: list | None = None, step: int = 1, **kwargs: dict[str, Any]
+) -> list:
+    """Load data iteratively using the given `load_fn`.
+
+    If `output` is given, all return values will be appended to this list. If not a new list will be made.
 
     Args:
         fs (PMXFileReadStream):
@@ -78,6 +82,7 @@ def _loop_load(fs: PMXFileReadStream, load_fn: Callable, output: list=None, step
 
     Returns:
         list: list of output elements.
+
     """
     if output is None:
         output = []
@@ -95,13 +100,13 @@ def _load_header(fs: PMXFileReadStream) -> pmx.Header:
     header = pmx.Header()
     header.signature = fs.read_bytes(4)
     if header.signature[:3] != pmx.PMX_SIGNATURE[:3]:
-        raise Exception(f'invalid file')
+        raise Exception('invalid file')
     header.version = fs.read_float()
     if header.version != pmx.PMX_VERSION:
-        raise Exception(f'unsupported version')
+        raise Exception('unsupported version')
     header_byte = fs.read_ubyte()
-    if header_byte != 8 or header.signature[3] != pmx.PMX_SIGNATURE[3]:
-        warnings.warn('This file might be corrupted.')
+    if header_byte != 8 or header.signature[3] != pmx.PMX_SIGNATURE[3]:  # noqa: PLR2004
+        warnings.warn('This file might be corrupted.', stacklevel=1)
     encoding_index = fs.read_byte()
     header.encoding = 'utf-16-le' if encoding_index == 0 else 'utf-8'
     header.additional_uvs = fs.read_ubyte()
@@ -166,11 +171,7 @@ def _load_sdef_bone_weight(fs: PMXFileReadStream) -> pmx.SDEFBoneWeight:
 
 def _load_face(fs: PMXFileReadStream) -> tuple[int, int, int]:
     """load face"""
-    return (
-        fs.read_vertex_index(),
-        fs.read_vertex_index(),
-        fs.read_vertex_index()
-    )
+    return (fs.read_vertex_index(), fs.read_vertex_index(), fs.read_vertex_index())
 
 
 def _load_texture(fs: PMXFileReadStream) -> pmx.Texture:
@@ -322,7 +323,7 @@ def _load_morph(fs: PMXFileReadStream) -> pmx.Morph:
         5: _load_uv_morph_offset,
         6: _load_uv_morph_offset,
         7: _load_uv_morph_offset,
-        8: _load_material_morph_offset
+        8: _load_material_morph_offset,
     }[morph.type_index]
 
     _loop_load(fs, offset_load_fn, morph.offsets)
@@ -396,7 +397,7 @@ def _load_display_frame(fs: PMXFileReadStream) -> pmx.DisplayFrame:
         elif display_type == 1:
             index = fs.read_morph_index()
         else:
-            raise Exception(f'invalid value')
+            raise Exception('invalid value')
         display.indices.append((display_type, index))
     return display
 
@@ -477,12 +478,12 @@ def _load_model(fs: PMXFileReadStream) -> pmx.Model:
     """load model"""
     model = pmx.Model()
 
-    model.filename=fs.path
-    model.header=fs.header
-    model.name=fs.read_str()
-    model.name_en=fs.read_str()
-    model.comment=fs.read_str()
-    model.comment_en=fs.read_str()
+    model.filename = fs.path
+    model.header = fs.header
+    model.name = fs.read_str()
+    model.name_en = fs.read_str()
+    model.comment = fs.read_str()
+    model.comment_en = fs.read_str()
 
     _loop_load(fs, _load_vertex, model.vertex)
     _loop_load(fs, _load_face, model.face, step=3)
@@ -508,6 +509,7 @@ def load(path: str) -> pmx.Model:
 
     Returns:
         pmx.Model: model data.
+
     """
     with PMXFileReadStream(path) as fs:
         header = _load_header(fs)

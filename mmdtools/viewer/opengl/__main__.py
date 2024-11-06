@@ -1,9 +1,10 @@
 import argparse
+
 from mmdtools.io import load_model
 from mmdtools.io.vmd import load as load_motion
-from mmdtools.viewer import Model
-from mmdtools.viewer import Motion
+from mmdtools.viewer import Model, Motion
 from mmdtools.viewer.opengl import is_opengl_available
+
 
 def get_args():
     parser = argparse.ArgumentParser()
@@ -15,10 +16,9 @@ def get_args():
 
 def main():
     if is_opengl_available():
-        from mmdtools.viewer.opengl import Viewer
-        from mmdtools.viewer.opengl import Window
+        from mmdtools.viewer.opengl import Viewer, Window
     else:
-        raise Exception(f'PyOpenGL is not available.')
+        raise Exception('PyOpenGL is not available.')
 
     args = get_args()
 
@@ -49,9 +49,7 @@ def main():
         print(len(images))
 
     if len(images) > 1:
-        images[1].save('./mmdviewer.gif', save_all=True, append_images=images[2:],
-            optimize=False, duration=10, loop=0
-        )
+        images[1].save('./mmdviewer.gif', save_all=True, append_images=images[2:], optimize=False, duration=10, loop=0)
     else:
         images[0].save('mmdviewer.png')
 

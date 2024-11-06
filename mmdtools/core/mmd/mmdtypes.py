@@ -4,13 +4,7 @@ import numpy as np
 
 from mmdtools.core.base import MMDComponent
 
-__all__ = [
-    'Metadata',
-    'Vertex',
-    'Material',
-    'Bone',
-    'Model'
-]
+__all__ = ['Metadata', 'Vertex', 'Material', 'Bone', 'Model']
 
 
 class Metadata(MMDComponent):
@@ -27,7 +21,7 @@ class Vertex(MMDComponent):
         self.normal: np.ndarray = None
         self.uv: np.ndarray = None
         self.additional_uvs: np.ndarray = None
-        self.bone_weight_type: int = 1 # default to BDEF2 for PMD.
+        self.bone_weight_type: int = 1  # default to BDEF2 for PMD.
         self.bone_ids: np.ndarray = np.zeros(4, dtype=int)
         self.bone_weights: np.ndarray = np.zeros(4, dtype=int)
         self.sdef_options: SDEFOptions = None
@@ -106,9 +100,4 @@ class Model(MMDComponent):
         self._raw = None
 
     def __repr__(self):
-        return (
-            '-' * 64 + '\n'
-            f'Model name: {self.metadata.name}\n'
-            f'Comment:\n{self.metadata.comment}\n'
-            + '-' * 64
-        )
+        return '-' * 64 + '\n' f'Model name: {self.metadata.name}\n' f'Comment:\n{self.metadata.comment}\n' + '-' * 64

@@ -1,8 +1,8 @@
 from __future__ import annotations
 
+import glfw
 import numpy as np
 import OpenGL.GL as gl
-import glfw
 from PIL import Image
 
 from mmdtools.viewer.common.typeanno import Vector3D
@@ -17,9 +17,16 @@ class Window:
         visible (bool): visibility of window. Default: False.
         background_color (Vector3D): background color. Default: (1.0, 1.0, 1.0).
         target_fps (int): target FPS. Default: 60.
+
     """
-    def __init__(self,
-        height: int, width: int, visible: bool=False, background_color: Vector3D=(1.0, 1.0, 1.0), target_fps: int=60
+
+    def __init__(
+        self,
+        height: int,
+        width: int,
+        visible: bool = False,
+        background_color: Vector3D = (1.0, 1.0, 1.0),
+        target_fps: int = 60,
     ) -> None:
         self.height = height
         self.width = width
@@ -44,41 +51,34 @@ class Window:
         glfw.make_context_current(window)
         gl.glClearColor(*background_color, 1.0)
 
-
     def set_background_color(self, background_color: Vector3D):
         """set background color.
 
         Args:
             background_color (Vector3D): a tuple representing color.
+
         """
         gl.glClearColor(*background_color, 1.0)
 
-
     def before_render(self) -> None:
-        """functions to run before rendering
-        """
+        """functions to run before rendering"""
         self.width, self.height = glfw.get_framebuffer_size(self.window)
         gl.glViewport(0, 0, self.width, self.height)
 
-
     def after_render(self) -> None:
-        """functions to run after rendering.
-        """
+        """functions to run after rendering."""
         gl.glFlush()
         glfw.swap_buffers(self.window)
         glfw.poll_events()
-        glfw.wait_events_timeout(1. / self.target_fps)
-
+        glfw.wait_events_timeout(1.0 / self.target_fps)
 
     def close(self) -> None:
-        """close window.
-        """
+        """close window."""
         if self.window is not None:
             glfw.destroy_window(self.window)
         glfw.terminate()
 
-
-    def read_pixels(self, frame_buffer: int=0) -> Image.Image:
+    def read_pixels(self, frame_buffer: int = 0) -> Image.Image:
         """read pixels from specific frame buffer.
 
         Args:
@@ -86,6 +86,7 @@ class Window:
 
         Returns:
             Image.Image: PIL image object.
+
         """
         gl.glBindFramebuffer(gl.GL_FRAMEBUFFER, frame_buffer)
         image_buffer = gl.glReadPixels(0, 0, self.width, self.height, gl.GL_RGB, gl.GL_UNSIGNED_BYTE)

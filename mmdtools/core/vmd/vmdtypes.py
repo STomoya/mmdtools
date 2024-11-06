@@ -21,17 +21,18 @@ __all__ = [
     'LampAnimation',
     'SelfShadowAnimation',
     'PropertyAnimation',
-    'VMDFile'
+    'VMDFile',
 ]
 
 
 VMD_SIGNATURE = b'Vocaloid Motion Data 0002'
 
-Vector3D: TypeAlias = "tuple[float, float, float]"
-Vector4D: TypeAlias = "tuple[float, float, float, float]"
+Vector3D: TypeAlias = 'tuple[float, float, float]'
+Vector4D: TypeAlias = 'tuple[float, float, float, float]'
 
 
-class VMDComponent(MMDComponent): pass
+class VMDComponent(MMDComponent):
+    pass
 
 
 class Header(VMDComponent):
@@ -90,25 +91,33 @@ class _VMDDict(defaultdict, VMDComponent):
     def __init__(self):
         super().__init__(list)
 
-class _VMDList(list, VMDComponent): pass
+
+class _VMDList(list, VMDComponent):
+    pass
 
 
-class BoneAnimation(_VMDDict): pass
+class BoneAnimation(_VMDDict):
+    pass
 
 
-class ShapeKeyAnimation(_VMDDict): pass
+class ShapeKeyAnimation(_VMDDict):
+    pass
 
 
-class CameraAnimation(_VMDList): pass
+class CameraAnimation(_VMDList):
+    pass
 
 
-class LampAnimation(_VMDList): pass
+class LampAnimation(_VMDList):
+    pass
 
 
-class SelfShadowAnimation(_VMDList): pass
+class SelfShadowAnimation(_VMDList):
+    pass
 
 
-class PropertyAnimation(_VMDList): pass
+class PropertyAnimation(_VMDList):
+    pass
 
 
 class VMDFile:
@@ -122,18 +131,15 @@ class VMDFile:
         self.self_shadow_animation: SelfShadowAnimation = []
         self.property_animation: PropertyAnimation = []
 
-
     def __repr__(self):
         return (
             '-' * 64 + '\n'
-            f'Filename: {self.filename}\n'
-            + '-' * 64 + '\n'
+            f'Filename: {self.filename}\n' + '-' * 64 + '\n'
             'Statistics\n'
             f'    Num. bones: {len(self.bone_animation)}\n'
             f'    Num. shapes: {len(self.shape_key_animation)}\n'
             f'    Num. camera frames: {len(self.camera_animation)}\n'
             f'    Num. lamp frames: {len(self.lamp_animation)}\n'
             f'    Num. self shadow frames: {len(self.self_shadow_animation)}\n'
-            f'    Num. property frames: {len(self.property_animation)}\n'
-            + '-' * 64
+            f'    Num. property frames: {len(self.property_animation)}\n' + '-' * 64
         )
