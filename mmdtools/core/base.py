@@ -1,4 +1,6 @@
+class MMDComponent:
+    pass
 
-class MMDComponent: pass
 
-class MMDModel: pass
+class MMDModel:
+    pass

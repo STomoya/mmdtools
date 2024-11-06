@@ -9,7 +9,7 @@ from mmdtools.io.utils import FileReadStream, crop_byte_string
 
 
 class VMDFileReadStream(FileReadStream):
-    def read_chars_cropped(self, length: int, pattern: bytes=b'\x00', decode: None|str='shift_jis'):
+    def read_chars_cropped(self, length: int, pattern: bytes = b'\x00', decode: None | str = 'shift_jis'):
         byte_string = self.read_chars(length)
         byte_string = crop_byte_string(byte_string, pattern)
         string = byte_string.decode(encoding=decode, errors='replace') if decode else byte_string
@@ -27,6 +27,7 @@ def _loop_load(fs: VMDFileReadStream, load_fn: Callable, **kwargs) -> None:
         fs (VMDFileReadStream):
         load_fn (Callable): function to load data.
         **kwargs: Additional keyword arguments that should be passed to `load_fn`.
+
     """
     num_loops = fs.read_ulong()
     for _ in range(num_loops):
@@ -34,8 +35,7 @@ def _loop_load(fs: VMDFileReadStream, load_fn: Callable, **kwargs) -> None:
 
 
 def _vmd_dict_load_fn(container: defaultdict, frame_key_load_fn: Callable) -> Callable:
-    """factory function that creates a function that can be passed to `_loop_load` for animation data
-    loaded to a `defaultdict`.
+    """Create a function that can be passed to `_loop_load` for animation data.
 
     Args:
         container (defaultdict): `defaultdict` object with default set to `list`. data returned from
@@ -44,17 +44,19 @@ def _vmd_dict_load_fn(container: defaultdict, frame_key_load_fn: Callable) -> Ca
 
     Returns:
         Callable: `load_fn` that can be passed to _loop_load
+
     """
+
     def load_fn(fs: VMDFileReadStream):
         name = fs.read_chars_cropped(15)
         frame_key = frame_key_load_fn(fs)
         container[name].append(frame_key)
+
     return load_fn
 
 
 def _vmd_list_load_fn(container: list, frame_key_load_fn: Callable) -> Callable:
-    """factory function that creates a function that can be passed to `_loop_load` for animation data
-    loaded to a `list`.
+    """Create a function that can be passed to `_loop_load` for animation data.
 
     Args:
         container (list): `list` object with default set to `list`. data returned from `frame_key_load_fn`
@@ -63,10 +65,13 @@ def _vmd_list_load_fn(container: list, frame_key_load_fn: Callable) -> Callable:
 
     Returns:
         Callable: `load_fn` that can be passed to _loop_load
+
     """
+
     def load_fn(fs: VMDFileReadStream):
         frame_key = frame_key_load_fn(fs)
         container.append(frame_key)
+
     return load_fn
 
 
@@ -75,7 +80,7 @@ def _load_header(fs: VMDFileReadStream) -> vmd.Header:
     header = vmd.Header()
     header.signature = fs.read_chars_cropped(30, decode=None)
     if header.signature != vmd.VMD_SIGNATURE:
-        raise Exception(f'invalid file')
+        raise Exception('invalid file')
     header.model_name = fs.read_chars_cropped(20)
     return header
 
@@ -133,7 +138,7 @@ def _load_carema_key_frame_key(fs: VMDFileReadStream) -> vmd.CameraKeyFrameKey:
     frame_key.rotation = fs.read_vector_3d()
     frame_key.interpolation = fs.read_vector(6)
     frame_key.angle = fs.read_ulong()
-    frame_key.perspective = (fs.read_byte() == 0)
+    frame_key.perspective = fs.read_byte() == 0
     return frame_key
 
 
@@ -211,7 +216,7 @@ def _load_file(fs: VMDFileReadStream) -> vmd.VMDFile:
 
     # these do not contain loop count if not exits.
     # When so, `struct` will raise an error reporting that the buffer
-    # is to small for that given format.
+    # is too small for that given format.
     # We re-raise any other errors.
     try:
         vmd_file.self_shadow_animation = _load_self_shadow_animation(fs)
@@ -235,6 +240,7 @@ def load(path: str) -> vmd.VMDFile:
 
     Returns:
         vmd.VMDFile: loaded .vmd file.
+
     """
     with VMDFileReadStream(path) as fs:
         vmd_file = _load_file(fs)

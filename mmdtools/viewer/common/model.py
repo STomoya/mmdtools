@@ -15,32 +15,32 @@ class Model:
         model_data (mmd.Model): model data.
 
     """
+
     def __init__(self, model_data: mmd.Model) -> None:
-        self.vertex_data: list[mmd.Vertex] = model_data.vertex
-        self.material_data: list[mmd.Material] = model_data.material
-        self.bone_data: list[mmd.Bone] = model_data.bone
+        self.vertex_data = model_data.vertex
+        self.material_data = model_data.material
+        self.bone_data = model_data.bone
 
-        self.vertex_position: np.ndarray = np.array([v.vertex for v in self.vertex_data], dtype=np.float32).reshape(-1)
-        self.vertex_uv: np.ndarray = np.array([v.uv for v in self.vertex_data], dtype=np.float32).reshape(-1)
-        self.vertex_normal: np.ndarray = np.array([v.normal for v in self.vertex_data], dtype=np.float32).reshape(-1)
-        self.vertex_edge_scale: np.ndarray = np.array([v.edge_scale for v in self.vertex_data], dtype=np.float32).reshape(-1)
-        self.vertex_bone_ids: np.ndarray = np.array([v.bone_ids for v in self.vertex_data], dtype=np.float32).reshape(-1)
-        self.vertex_bone_weights: np.ndarray = np.array([v.bone_weights for v in self.vertex_data], dtype=np.float32).reshape(-1)
+        self.vertex_position = np.array([v.vertex for v in self.vertex_data], dtype=np.float32).reshape(-1)
+        self.vertex_uv = np.array([v.uv for v in self.vertex_data], dtype=np.float32).reshape(-1)
+        self.vertex_normal = np.array([v.normal for v in self.vertex_data], dtype=np.float32).reshape(-1)
+        self.vertex_edge_scale = np.array([v.edge_scale for v in self.vertex_data], dtype=np.float32).reshape(-1)
+        self.vertex_bone_ids = np.array([v.bone_ids for v in self.vertex_data], dtype=np.float32).reshape(-1)
+        self.vertex_bone_weights = np.array([v.bone_weights for v in self.vertex_data], dtype=np.float32).reshape(-1)
 
-        self.face: np.ndarray = np.array(model_data.face, dtype=np.uint16).reshape(-1)
+        self.face = np.array(model_data.face, dtype=np.uint16).reshape(-1)
 
         self.motion_bones: list[Bone] = []
         # for fast searching of bones. O(1).
         self.name2mbone_index: dict[str, int] = {}
         self.level2mbone_indices: dict[int, list[int]] = defaultdict(list)
-        self._is_bone_initialized: bool = False
+        self._is_bone_initialized = False
 
         self._create_motion_bones()
 
         self._raw_data = model_data
 
-
-    def _create_motion_bones(self, force: bool=False) -> None:
+    def _create_motion_bones(self, force: bool = False) -> None:
         """create bones for motion.
 
         Args:
@@ -59,7 +59,6 @@ class Model:
             self.motion_bones.append(bone)
             self.name2mbone_index[bone.name] = i
             self.level2mbone_indices[bone.level].append(i)
-
 
         # set attributes that needs reference to instantiated bone objects.
         for i, bone_data in enumerate(self.bone_data):
@@ -89,7 +88,6 @@ class Model:
         # check all bone is initialized.
         assert all(bone.is_initialized for bone in self.motion_bones)
 
-
     def get_bone_by_name(self, bone_name: str) -> Bone:
         """get bone by it's name. Only supports Japanese names.
 
@@ -101,7 +99,6 @@ class Model:
 
         """
         return self.motion_bones[self.name2mbone_index[bone_name]]
-
 
     def update_bones(self) -> None:
         """update the motion bones. This function only adjusts the bone positions according to the
@@ -128,7 +125,6 @@ class Model:
         for bone in self.motion_bones:
             bone.apply()
             bone.reset_delta()
-
 
     def create_vertex_transform_matrix(self) -> np.ndarray:
         """create transformation matrices for all the vertices. currently does not support SDEF weighting.

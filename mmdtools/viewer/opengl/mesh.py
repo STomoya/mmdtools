@@ -8,7 +8,6 @@ from mmdtools.viewer.opengl.shader import Shader
 from mmdtools.viewer.opengl.texture import Texture, TextureUnit
 
 
-
 class Mesh:
     """mesh class. for rendering both polygons and edges.
 
@@ -19,9 +18,11 @@ class Mesh:
         shader (np.ndarray): Normal shader object.
         edge_shader (np.ndarray, optional): shader for drawing edges. `None` results in rendering
             without edges. Default: None.
+
     """
-    def __init__(self,
-        index: int, material: Material, face: np.ndarray, shader: Shader, edge_shader: Shader|None=None
+
+    def __init__(
+        self, index: int, material: Material, face: np.ndarray, shader: Shader, edge_shader: Shader | None = None
     ) -> None:
         self.index = index
         self.shader = shader
@@ -47,7 +48,8 @@ class Mesh:
         # edge
         # enable edge drawing only if need.
         self.enable_edge = material.enabled_edge and isinstance(edge_shader, Shader)
-        if self.enable_edge: self.edge_shader.set_index(self.index, face)
+        if self.enable_edge:
+            self.edge_shader.set_index(self.index, face)
 
         self.edge_color = material.edge_color
         self.edge_size = material.edge_size
@@ -58,12 +60,12 @@ class Mesh:
 
         self._material_data = material
 
-
-    def draw(self, draw_edge: bool=False):
+    def draw(self, draw_edge: bool = False):
         """draw mesh.
 
         Args:
             draw_edge (bool): If `True`, switch rendering to edge mode. Default: False.
+
         """
 
         # edge drawing path.
@@ -72,9 +74,7 @@ class Mesh:
             return
 
         elif draw_edge:
-
             with self.edge_shader.drawing():
-
                 # # bind edge specific variables
 
                 # edge
@@ -101,7 +101,6 @@ class Mesh:
             gl.glEnable(gl.GL_CULL_FACE)
 
         with self.shader.drawing():
-
             # # bind material specific variables
 
             # textures

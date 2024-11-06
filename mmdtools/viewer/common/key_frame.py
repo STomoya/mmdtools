@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 from functools import lru_cache
+
 import numpy as np
 from pyrr import quaternion
-from mmdtools.core import vmd
 
+from mmdtools.core import vmd
 from mmdtools.viewer.common.bone import Bone
 
 
@@ -23,20 +24,22 @@ def solve_bezier(x: tuple[float, float], y: tuple[float, float], linear_rate: fl
 
     Returns:
         float: approximated value.
+
     """
     t = s = 0.5
     for i in range(15):
-        ft = (3 * s ** 2 * t * x[0]) + (3 * s * t ** 2 * x[1]) + (t**3) - linear_rate
-        if np.abs(ft) < 1e-5: break
+        ft = (3 * s**2 * t * x[0]) + (3 * s * t**2 * x[1]) + (t**3) - linear_rate
+        if np.abs(ft) < 1e-5:  # noqa: PLR2004
+            break
         sign = -1 if ft > 0 else 1
         t += sign * 1 / (4 << i)
         s = 1 - t
-    return (3 * s ** 2 * t * y[0]) + (3 * s * t ** 2 * y[1]) + (t**3)
+    return (3 * s**2 * t * y[0]) + (3 * s * t**2 * y[1]) + (t**3)
 
 
 class BoneMotionKeyFrame:
-    """Bone motion key frames.
-    """
+    """Bone motion key frames."""
+
     def __init__(self, bone, key_frame: vmd.BoneFrameKey) -> None:
         self.bone: Bone = bone
 
@@ -49,37 +52,36 @@ class BoneMotionKeyFrame:
             'x': {'x': tuple(bezier_points[0]), 'y': tuple(bezier_points[4])},
             'y': {'x': tuple(bezier_points[1]), 'y': tuple(bezier_points[5])},
             'z': {'x': tuple(bezier_points[2]), 'y': tuple(bezier_points[6])},
-            'r': {'x': tuple(bezier_points[3]), 'y': tuple(bezier_points[7])}
+            'r': {'x': tuple(bezier_points[3]), 'y': tuple(bezier_points[7])},
         }
 
         self.next_frame: BoneMotionKeyFrame = None
 
         self._is_next_frame_initialized = False
 
-
     @property
     def is_initialized(self) -> bool:
         return self._is_next_frame_initialized
 
-
     def set_next_frame(self, next_frame: BoneMotionKeyFrame) -> None:
-        """set next frame. input must be an instatiated `BoneMotionKeyFrame` object.
+        """Set next frame. input must be an instatiated `BoneMotionKeyFrame` object.
 
         Args:
             next_frame (BoneMotionKeyFrame): reference to next key frame object.
+
         """
         self._is_next_frame_initialized = True
         self.next_frame = next_frame
 
-
     def get_linear_rate(self, frame: int) -> float:
-        """get linear interpolation between key frames
+        """Get linear interpolation between key frames
 
         Args:
             frame (int): current frame.
 
         Returns:
             float: normalized frame.
+
         """
         if self.next_frame is not None:
             if self.next_frame.frame_number == self.frame_number:
@@ -89,9 +91,8 @@ class BoneMotionKeyFrame:
 
         return rate
 
-
-    def update(self, frame: int) -> BoneMotionKeyFrame|None:
-        """update
+    def update(self, frame: int) -> BoneMotionKeyFrame | None:
+        """Update.
 
         Args:
             frame (int): current frame.
@@ -99,6 +100,7 @@ class BoneMotionKeyFrame:
         Returns:
             BoneMotionKeyFrame|None: current frame object or the next frame object, according to the
                 input `frame`.
+
         """
 
         #  we stay in the current position.
@@ -128,15 +130,15 @@ class BoneMotionKeyFrame:
 
         return self
 
-
     def interp_translation(self, linear_rate: float) -> np.ndarray:
-        """bezier interpolation of translation for each x, y, z coordinate.
+        """Bezier interpolation of translation for each x, y, z coordinate.
 
         Args:
             linear_rate (float): normalized frame position between key frames.
 
         Returns:
             np.ndarray: interpolated translation.
+
         """
         bezier_x_rate = solve_bezier(**self.bezier_points['x'], linear_rate=linear_rate)
         bezier_y_rate = solve_bezier(**self.bezier_points['y'], linear_rate=linear_rate)
@@ -144,15 +146,15 @@ class BoneMotionKeyFrame:
         rate = np.array([bezier_x_rate, bezier_y_rate, bezier_z_rate])
         return self.next_frame.translation * rate + self.translation * (1 - rate)
 
-
     def interp_rotation(self, linear_rate: float) -> np.ndarray:
-        """bezier interpolation of rotation. uses slerp.
+        """Bezier interpolation of rotation. uses slerp.
 
         Args:
             linear_rate (float): normalized frame position between key frames.
 
         Returns:
             np.ndarray: interpolated rotation.
+
         """
         bezier_r_rate = solve_bezier(**self.bezier_points['r'], linear_rate=linear_rate)
         return quaternion.slerp(self.rotation, self.next_frame.rotation, bezier_r_rate)

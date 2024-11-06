@@ -1,29 +1,23 @@
-
 import struct
-
 
 
 class FileStream:
     def __init__(self, path, mode) -> None:
-        assert 'b' in mode, f'Only binary read/write mode is supported.'
+        assert 'b' in mode, 'Only binary read/write mode is supported.'
         self._path = path
         self._mode = mode
         self._fp = None
-
 
     @property
     def path(self) -> str:
         return self._path
 
-
     def __enter__(self) -> 'FileStream':
         self._fp = open(self._path, self._mode)
         return self
 
-
     def __exit__(self, exc_type, exc_value, traceback) -> None:
         self.close()
-
 
     def close(self):
         if self._fp is not None:
@@ -34,7 +28,6 @@ class FileStream:
 class FileReadStream(FileStream):
     def __init__(self, path) -> None:
         super().__init__(path=path, mode='rb')
-
 
     """reading methods"""
 
@@ -62,7 +55,7 @@ class FileReadStream(FileStream):
         """read long"""
         return struct.unpack('<L', self._fp.read(4))[0]
 
-    def read_chars(self, length: int=1):
+    def read_chars(self, length: int = 1):
         return struct.unpack(f'<{length}s', self._fp.read(length))[0]
 
     def read_float(self):

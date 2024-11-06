@@ -15,7 +15,9 @@ class Viewer:
     Args:
         model (Model): model data.
         motion (Motion): motion data. Pass `None` if no motion data.
+
     """
+
     def __init__(self, model: Model, motion: Motion) -> None:
         self.model = model
         self.motion = motion
@@ -41,23 +43,17 @@ class Viewer:
 
         self._is_polygon_mode_fill = True
 
-
     def _create_mesh(self):
-        """create mesh for visulization.
-        """
+        """create mesh for visulization."""
         total_face = self.model.face.copy()
         for material_index, material_data in enumerate(self.model.material_data):
-            mesh_face = total_face[:material_data.face_vertex_size].copy()
-            total_face = total_face[material_data.face_vertex_size:]
-            mesh = Mesh(
-                material_index, material_data, mesh_face, self.shader, self.edge_shader
-            )
+            mesh_face = total_face[: material_data.face_vertex_size].copy()
+            total_face = total_face[material_data.face_vertex_size :]
+            mesh = Mesh(material_index, material_data, mesh_face, self.shader, self.edge_shader)
             self.mesh.append(mesh)
 
-
     def switch_polygon_mode(self):
-        """switch polygon mode. If wireframe mode, switch to fill and vice versa.
-        """
+        """switch polygon mode. If wireframe mode, switch to fill and vice versa."""
         if self._is_polygon_mode_fill:
             gl.glPolygonMode(gl.GL_FRONT_AND_BACK, gl.GL_LINE)
             self._is_polygon_mode_fill = False
@@ -65,17 +61,9 @@ class Viewer:
             gl.glPolygonMode(gl.GL_FRONT_AND_BACK, gl.GL_FILL)
             self._is_polygon_mode_fill = True
 
-
     def set_variables(self):
-        """set variables to shader.
-        """
-        # bone_transforms = self.model.create_vertex_transform_matrix()
-        # bone_transforms_row0 = bone_transforms[:, 0]
-        # bone_transforms_row1 = bone_transforms[:, 1]
-        # bone_transforms_row2 = bone_transforms[:, 2]
-        # bone_transforms_row3 = bone_transforms[:, 3]
+        """set variables to shader."""
         bone_transforms = self.model.collect_bone_transforms()
-
 
         with self.shader.use_program():
             self.shader.set_vec3('uLightAmbient', self.env.light.ambient)
@@ -88,16 +76,13 @@ class Viewer:
             self.shader.set_mat4('uITModelViewM', self.env.it_model_view_matrix)
             self.shader.set_mat4('uBoneTransform', bone_transforms, bone_transforms.shape[0])
 
-
         with self.edge_shader.use_program():
             self.edge_shader.set_mat4('uProjectionM', self.env.projection_matrix)
             self.edge_shader.set_mat4('uModelViewM', self.env.model_view_matrix)
             self.edge_shader.set_mat4('uBoneTransform', bone_transforms, bone_transforms.shape[0])
 
-
     def draw(self):
-        """draw model.
-        """
+        """draw model."""
         # enable depth test
         gl.glEnable(gl.GL_DEPTH_TEST)
         gl.glDepthFunc(gl.GL_LEQUAL)
@@ -110,8 +95,7 @@ class Viewer:
         gl.glEnable(gl.GL_MULTISAMPLE)
         # enable cull facing
         gl.glEnable(gl.GL_CULL_FACE)
-        gl.glFrontFace(gl.GL_CCW) # counter clock-wise (CCW)
-
+        gl.glFrontFace(gl.GL_CCW)  # counter clock-wise (CCW)
 
         # set face culling to back for drawing polygons.
         gl.glCullFace(gl.GL_BACK)
@@ -129,7 +113,6 @@ class Viewer:
         for mesh in self.mesh:
             mesh.draw(draw_edge=True)
 
-
         # diable enabled settings for further rendering (if any).
         gl.glDisable(gl.GL_CULL_FACE)
         gl.glDisable(gl.GL_MULTISAMPLE)
@@ -137,10 +120,8 @@ class Viewer:
         gl.glDisable(gl.GL_TEXTURE_2D)
         gl.glDisable(gl.GL_DEPTH_TEST)
 
-
     def step(self):
-        """step motion.
-        """
+        """step motion."""
         if self.motion is not None:
             self.motion.step()
             self.model.update_bones()

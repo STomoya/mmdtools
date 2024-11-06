@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 from enum import IntEnum
+from typing import ClassVar
 
 import numpy as np
 import OpenGL.GL as gl
@@ -21,17 +22,16 @@ class Texture:
     NOTE: do not instantiate object via constructor but use `create` classmethod.
     """
 
-    _cache = {}
+    _cache: ClassVar = {}
 
-    def __init__(self, filename: None|str=None, unit: int=0) -> None:
+    def __init__(self, filename: None | str = None, unit: int = 0) -> None:
         self.gl_texture: int = None
         self.filename: str = filename
         self.unit: TextureUnit = unit
         self._load()
 
-
     @classmethod
-    def create(cls, filename: str, is_sphere: bool=False, is_toon: bool=False) -> Texture:
+    def create(cls, filename: str, is_sphere: bool = False, is_toon: bool = False) -> Texture:
         """class method that returns the texture object. It reuses the same object if already exits.
         `is_sphere` and `is_toon` cannot be triggered together.
 
@@ -42,6 +42,7 @@ class Texture:
 
         Returns:
             Texture: created texture object.
+
         """
         assert not (is_sphere and is_toon)
 
@@ -60,7 +61,6 @@ class Texture:
         texture_obj = cls(filename, unit)
         cls._cache[key] = texture_obj
         return texture_obj
-
 
     def _load(self) -> None:
         """load image and setup"""
@@ -86,7 +86,6 @@ class Texture:
             gl.glTexParameterf(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_WRAP_T, gl.GL_REPEAT)
 
         gl.glGenerateMipmap(gl.GL_TEXTURE_2D)
-
 
     def use(self) -> None:
         """call before this texture is used."""
